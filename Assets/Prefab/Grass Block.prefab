@@ -131,6 +131,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRendererShovel: {fileID: 1378013869856683899}
+  spriteRendererDirt: {fileID: 2697001000281706971}
+  dirtStateSprites:
+  - {fileID: -6538848542442908199, guid: ae6280b26425d604fa02d9f63cf6d3d9, type: 3}
+  - {fileID: -3510072988476588810, guid: ae6280b26425d604fa02d9f63cf6d3d9, type: 3}
+  - {fileID: -4279919972187745427, guid: ae6280b26425d604fa02d9f63cf6d3d9, type: 3}
+  - {fileID: 4755774680869275201, guid: ae6280b26425d604fa02d9f63cf6d3d9, type: 3}
 --- !u!61 &995280274087507288
 BoxCollider2D:
   m_ObjectHideFlags: 0

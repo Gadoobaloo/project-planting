@@ -12,8 +12,7 @@ public class Shovel : Item
         {
             Dive();
         }
-        
-        
+
         //if the shovel lands on a grassblock
         //check if the grass block is fertile
         //if it is, despawn the shovel

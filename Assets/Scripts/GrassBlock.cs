@@ -5,10 +5,15 @@ using UnityEngine;
 
 public class GrassBlock : MonoBehaviour
 {
-    [SerializeField]private SpriteRenderer spriteRendererShovel;
+    [SerializeField] private SpriteRenderer spriteRendererShovel;
+    [SerializeField] private SpriteRenderer spriteRendererDirt;
+    
+    [SerializeField] private Sprite[] dirtStateSprites;
+    private bool isFertile;
 
     void Start()
     {
+        SetDirtState(0);
         HideShovel();
     }
 
@@ -34,5 +39,16 @@ public class GrassBlock : MonoBehaviour
         //have progress bar show
         //allow for cancel
         //after successful dig, apply fertilized soil state
+    }
+
+    private void SetDirtState(int toSet)
+    {
+        spriteRendererDirt.sprite = toSet == 0 ? null : dirtStateSprites[toSet - 1];
+        isFertile = toSet == 4;
+    }
+
+    public bool GetIsFertile()
+    {
+        return isFertile;
     }
 }
