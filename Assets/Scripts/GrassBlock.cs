@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GrassBlock : MonoBehaviour
@@ -9,9 +6,9 @@ public class GrassBlock : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRendererDirt;
     
     [SerializeField] private Sprite[] dirtStateSprites;
-    private bool isFertile;
+    private bool _isFertile;
 
-    void Start()
+    private void Start()
     {
         SetDirtState(0);
         HideShovel();
@@ -44,11 +41,11 @@ public class GrassBlock : MonoBehaviour
     private void SetDirtState(int toSet)
     {
         spriteRendererDirt.sprite = toSet == 0 ? null : dirtStateSprites[toSet - 1];
-        isFertile = toSet == 4;
+        _isFertile = toSet == 4;
     }
 
     public bool GetIsFertile()
     {
-        return isFertile;
+        return _isFertile;
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -67,26 +66,25 @@ public class Glove : MonoBehaviour
         
         foreach (var c2D in collider2Ds)
         {
-            if (c2D.GetComponent<Item>() != null)
+            if (c2D.GetComponent<Item>() == null) continue;
+            if (c2D.GetComponent<Item>().GetIsLanded()) continue;
+            if (!_isGrabbing)
             {
-                if (!_isGrabbing)
-                {
-                    var itemTransform = c2D.GetComponent<Transform>();
-                    var itemRb = c2D.GetComponent<Rigidbody2D>();
+                var itemTransform = c2D.GetComponent<Transform>();
+                var itemRb = c2D.GetComponent<Rigidbody2D>();
     
-                    itemTransform.parent = transform;
-                    itemTransform.position = itemTransform.parent.position;
+                itemTransform.parent = transform;
+                itemTransform.position = itemTransform.parent.position;
     
-                    itemRb.bodyType = RigidbodyType2D.Kinematic;
-                    itemRb.velocity = Vector2.zero;
-                    itemRb.angularVelocity = 0f;
+                itemRb.bodyType = RigidbodyType2D.Kinematic;
+                itemRb.velocity = Vector2.zero;
+                itemRb.angularVelocity = 0f;
                     
-                    _isGrabbing = true;
-                }
-                else
-                {
-                    c2D.GetComponent<Item>().Activate();
-                }
+                _isGrabbing = true;
+            }
+            else
+            {
+                c2D.GetComponent<Item>().Activate();
             }
         }
     }

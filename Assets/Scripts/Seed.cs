@@ -1,11 +1,26 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Seed : Item
 {
-
     public override void Activate()
     {
         Launch(0f, 800f);
+    }
+
+    public override void SpawnLaunch()
+    {
+        if (transform.position.x <= 0)
+        {
+            //seed is on left
+            Launch(200, 600, 100, 400);
+        }
+        else
+        {
+            //seed is on right
+            Launch(-300, -600, 150, 250);
+        }
     }
 
     private void Update()
@@ -14,24 +29,24 @@ public class Seed : Item
 
         if (c2D.IsTouching(FilterGrassBlock) && !IsLanded)
         {
-            IsLanded = true;
-            var temp = new Collider2D[1];
-            c2D.GetContacts(FilterGrassBlock, temp);
+            Land();
+        }
+    }
 
-            if (temp[0].GetComponent<GrassBlockCollection>() != null)
+    private void Land()
+    {
+        IsLanded = true;
+        var collider2Ds = new List<Collider2D>();
+        c2D.GetContacts(FilterGrassBlock, collider2Ds);
+
+        foreach (var t in collider2Ds.Where(t => t.GetComponent<GrassBlock>() != null))
+        {
+            if (t.GetComponent<GrassBlock>().GetIsFertile())
             {
-                Debug.Log("oops");
-            }
-            
-            if (temp[0].GetComponent<GrassBlock>().GetIsFertile())
-            {
-                Debug.Log("ground is fertile");
-                //todo - have the ground close
                 Destroy(gameObject);
             }
             else
             {
-                Debug.Log("ground is not fertile");
                 spriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
                 Destroy(gameObject, 0.5f);
             }

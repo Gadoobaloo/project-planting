@@ -15,18 +15,6 @@ public abstract class Item : MonoBehaviour
     {
         FilterGrassBlock.SetDepth(12f, 12f);
         IsLanded = false;
-
-
-        if (transform.position.x <= 0)
-        {
-            //seed is on left
-            Launch(200, 600, 100, 400);
-        }
-        else
-        {
-            //seed is on right
-            Launch(-300, -600, 150, 250);
-        }
     }
 
     private void Update()
@@ -42,6 +30,7 @@ public abstract class Item : MonoBehaviour
     }
 
     public abstract void Activate();
+    public abstract void SpawnLaunch();
 
     protected void Launch(float x, float y)
     {
@@ -55,7 +44,9 @@ public abstract class Item : MonoBehaviour
         
         rb.AddForce(new Vector2(x, y));
     }
-    
-    
-    
+
+    public bool GetIsLanded()
+    {
+        return IsLanded;
+    }
 }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 995280273461924112}
   - component: {fileID: 995280273461924115}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: grassBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 995280274087507291}
   - component: {fileID: 995280274087507288}
   - component: {fileID: 5236344033586104312}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Grass Block
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7160640759101999869}
   - component: {fileID: 2697001000281706971}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: dirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -276,7 +276,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1317106343022855859}
   - component: {fileID: 1378013869856683899}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: shovel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

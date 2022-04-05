@@ -541,7 +541,7 @@ GameObject:
   - component: {fileID: 378961593}
   - component: {fileID: 378961594}
   - component: {fileID: 378961595}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Grass Block Collection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1310,6 +1310,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seedPrefab: {fileID: 5251158363791454282, guid: 8356769801a61e14b914b9ee31727d6b, type: 3}
+  shovelPrefab: {fileID: 2015154528237133801, guid: b1db2d8b4c7802a4cbd1747352b2ebc8, type: 3}
 --- !u!4 &1111459589
 Transform:
   m_ObjectHideFlags: 0
@@ -1541,10 +1542,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 378961593}
     m_Modifications:
-    - target: {fileID: 995280273461924113, guid: 994dfeb24f1731a4eb5d45efeeaa5fbe, type: 3}
-      propertyPath: m_Layer
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 995280274087507289, guid: 994dfeb24f1731a4eb5d45efeeaa5fbe, type: 3}
       propertyPath: m_RootOrder
       value: 19
@@ -1592,10 +1589,6 @@ PrefabInstance:
     - target: {fileID: 995280274087507294, guid: 994dfeb24f1731a4eb5d45efeeaa5fbe, type: 3}
       propertyPath: m_Name
       value: Grass Block (19)
-      objectReference: {fileID: 0}
-    - target: {fileID: 995280274087507294, guid: 994dfeb24f1731a4eb5d45efeeaa5fbe, type: 3}
-      propertyPath: m_Layer
-      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 994dfeb24f1731a4eb5d45efeeaa5fbe, type: 3}

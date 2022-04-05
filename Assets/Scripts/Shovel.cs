@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Shovel : Item
@@ -12,11 +10,6 @@ public class Shovel : Item
         {
             Dive();
         }
-
-        //if the shovel lands on a grassblock
-        //check if the grass block is fertile
-        //if it is, despawn the shovel
-        //if it isn't,  
     }
 
     public override void Activate()
@@ -25,6 +18,11 @@ public class Shovel : Item
         rb.AddTorque(-500f);
         rb.AddForce(new Vector2(0, 4000));
         _isActivated = true;
+    }
+
+    public override void SpawnLaunch()
+    {
+        Debug.Log("shovel spawned");
     }
 
     private void Dive()

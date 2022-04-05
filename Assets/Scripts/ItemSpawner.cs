@@ -3,16 +3,19 @@ using UnityEngine;
 public class ItemSpawner : MonoBehaviour
 {
     [SerializeField] private Transform seedPrefab;
+    [SerializeField] private Transform shovelPrefab;
     private int _cooldown;
 
-    void Start()
+    private void Start()
     {
         _cooldown = 10;
     }
 
-    void Update()
+    private void Update()
     {
         _cooldown--;
+        
+        //have the chance of a particular item spawning be random
 
         if (_cooldown <= 0)
         {
@@ -22,9 +25,12 @@ public class ItemSpawner : MonoBehaviour
 
     private void SpawnSeed()
     {
-        Vector3 pos = transform.position;
-        
-        Instantiate(seedPrefab, pos, Quaternion.identity);
+        Instantiate(seedPrefab, transform.position, Quaternion.identity);
         _cooldown = 60;
+    }
+
+    private void SpawnShovel()
+    {
+        Instantiate(shovelPrefab, transform.position, Quaternion.identity);
     }
 }
