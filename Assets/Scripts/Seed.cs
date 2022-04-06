@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Seed : Item
 {
+    private List<Collider2D> collider2Ds = new List<Collider2D>();
+
     public override void Activate()
     {
         Launch(0f, 800f);
@@ -36,8 +38,14 @@ public class Seed : Item
     private void Land()
     {
         IsLanded = true;
-        var collider2Ds = new List<Collider2D>();
+        
         c2D.GetContacts(FilterGrassBlock, collider2Ds);
+        
+        if (collider2Ds.Count == 0)
+        {
+            IsLanded = false;
+            Debug.Log("land reset");
+        }
 
         foreach (var t in collider2Ds.Where(t => t.GetComponent<GrassBlock>() != null))
         {

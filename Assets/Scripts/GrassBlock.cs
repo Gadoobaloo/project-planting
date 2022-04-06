@@ -7,35 +7,52 @@ public class GrassBlock : MonoBehaviour
     
     [SerializeField] private Sprite[] dirtStateSprites;
     private bool _isFertile;
+    private bool _isDigReady;
+    private bool _isDigging;
 
     private void Start()
     {
+        _isFertile = false;
+        _isDigReady = false;
+        _isDigging = false;
+
         SetDirtState(0);
         HideShovel();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetMouseButtonDown(0) && _isDigReady)
+        {
+            DigStart();
+        }
+
+        if (Input.GetMouseButtonUp(0) && _isDigging)
+        {
+            DigStop();
+        }
     }
 
     public void HideShovel()
     {
+        _isDigReady = false;
         spriteRendererShovel.color = new Color(1f, 1f, 1f, 0f);
     }
 
     public void ShowShovel()
     {
+        _isDigReady = true;
         spriteRendererShovel.color = new Color(1f, 1f, 1f, 1f);
     }
 
-    void Dig()
+    void DigStart()
     {
-        //play shovel animation
-        //have progress bar show
-        //allow for cancel
-        //after successful dig, apply fertilized soil state
+        _isDigging = true;
+    }
+
+    private void DigStop()
+    {
+        _isDigging = false;
     }
 
     private void SetDirtState(int toSet)

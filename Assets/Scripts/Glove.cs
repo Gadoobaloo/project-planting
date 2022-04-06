@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -149,4 +150,5 @@ public class Glove : MonoBehaviour
     {
         spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
     }
+    
 }
