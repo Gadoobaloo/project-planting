@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +13,7 @@ public class Glove : MonoBehaviour
     
     private ContactFilter2D _filterItems;
     private ContactFilter2D _filterGrassBlock;
-    
+
     private bool _isGrabbing;
     private bool _isTouchGrass;
     
@@ -126,28 +125,17 @@ public class Glove : MonoBehaviour
         itemTransform.parent = null;
     }
 
-    private void TouchGrass()
-    {
-        _isTouchGrass = true;
-        if(_isGrabbing) LaunchItem();
-        HideGlove();
-        //show the shovel of the first block
-        //allow for cl
-    }
-
-    private void UntouchGrass()
-    {
-        _isTouchGrass = false;
-        ShowGlove();
-    }
-
     public void HideGlove()
     {
+        _isTouchGrass = true;
+        //todo- if the glove is holding something launch it, and make sure it doesn't count as landing;
+        
         spriteRenderer.color = new Color(1f, 1f, 1f, 0f);
     }
 
     public void ShowGlove()
     {
+        _isTouchGrass = false;
         spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
     }
     

@@ -41,16 +41,13 @@ public class Seed : Item
         
         c2D.GetContacts(FilterGrassBlock, collider2Ds);
         
-        if (collider2Ds.Count == 0)
-        {
-            IsLanded = false;
-            Debug.Log("land reset");
-        }
+        if (collider2Ds.Count == 0)IsLanded = false;
 
         foreach (var t in collider2Ds.Where(t => t.GetComponent<GrassBlock>() != null))
         {
             if (t.GetComponent<GrassBlock>().GetIsFertile())
             {
+                t.GetComponent<GrassBlock>().PlantSeed();
                 Destroy(gameObject);
             }
             else

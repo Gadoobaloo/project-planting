@@ -4,21 +4,17 @@ public class ItemSpawner : MonoBehaviour
 {
     [SerializeField] private Transform seedPrefab;
     [SerializeField] private Transform shovelPrefab;
-    private int _cooldown;
-
-    private void Start()
-    {
-        _cooldown = 10;
-    }
+    private float _timer;
 
     private void Update()
     {
-        _cooldown--;
+        _timer += Time.deltaTime;
         
-        //have the chance of a particular item spawning be random
+        //todo - have the chance of a particular item spawning be random
 
-        if (_cooldown <= 0)
+        if (_timer > 2f)
         {
+            _timer = 0f;
             SpawnSeed();
         }
     }
@@ -26,7 +22,6 @@ public class ItemSpawner : MonoBehaviour
     private void SpawnSeed()
     {
         Instantiate(seedPrefab, transform.position, Quaternion.identity);
-        _cooldown = 60;
     }
 
     private void SpawnShovel()
