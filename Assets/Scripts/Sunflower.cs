@@ -1,55 +1,48 @@
-using System.Collections.Generic;
 using UnityEngine;
-
-//sunflower is its own prefab that gets instantiated as a child of grass block;
 
 public class Sunflower : MonoBehaviour
 {
     [SerializeField] private Transform stemPrefab;
     [SerializeField] private Transform headPrefab;
 
-    private float _timer;
-
-    private int _minSize = 1;
-    private int _maxSize = 6;
-    private int _actualSize;
-    private int _currentSize;
+    private const int MaxSize = 8;
+    private int _goalSize;
 
     private void Start()
     {
+        transform.localPosition = new Vector3(0, 1, 0);
         DetermineSize();
-        
-        _timer = 0;
+        GrowNext();
     }
-
-    private void Update()
-    {
-        _timer += Time.deltaTime;
-
-        if (_timer >= 1f)
-        {
-            _timer = 0;
-        }
-    }
-
+    
     private void DetermineSize()
     {
-        _actualSize = Random.Range(_minSize, _maxSize);
+        _goalSize = Random.Range(2, MaxSize);
     }
     
     private void GrowStem()
     {
         Instantiate(stemPrefab, transform);
+
+        var childCount = transform.childCount;
+        transform.GetChild(childCount -1).GetComponent<SunflowerPart>().SetHeight(childCount -1);
     }
 
     private void GrowHead()
     {
         Instantiate(headPrefab, transform);
+        
+        var childCount = transform.childCount;
+        transform.GetChild(childCount -1).GetComponent<SunflowerPart>().SetHeight(childCount -1);
     }
 
     private void GrowNext()
     {
-        if (_currentSize < _maxSize) GrowStem();
+        var childCount = transform.childCount;
+
+        if (childCount < _goalSize - 1) GrowStem();
+        if (childCount == _goalSize - 1) GrowHead();
+        if (childCount >= _goalSize) Debug.Log("sunflower has finished growing");
     }
 
     public void SegmentFinish()

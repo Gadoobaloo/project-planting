@@ -130,6 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e16de6aafbab7f439ef8f2c45f9d7b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sunflowerPrefab: {fileID: 4829765589594516997, guid: ec7d21b36f4272c4e831b4988f4f0a51, type: 3}
   spriteRendererShovel: {fileID: 1378013869856683899}
   spriteRendererDirt: {fileID: 2697001000281706971}
   shovelAnimator: {fileID: 7692373876230556081}

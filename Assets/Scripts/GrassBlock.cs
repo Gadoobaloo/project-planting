@@ -5,6 +5,7 @@ enum DirtState {None, Small, Medium, Fertile, Planted}
 
 public class GrassBlock : MonoBehaviour
 {
+    [SerializeField] private Transform sunflowerPrefab;
     [SerializeField] private SpriteRenderer spriteRendererShovel;
     [SerializeField] private SpriteRenderer spriteRendererDirt;
 
@@ -110,9 +111,7 @@ public class GrassBlock : MonoBehaviour
             case DirtState.Planted:
                 spriteRendererDirt.sprite = dirtStateSprites[3];
                 spriteRendererDirt.color = new Color(1f, 1f, 1f, 1f);
-                
-                //todo - activate sunflower
-                Debug.Log("grow sunflower");
+                GrowSunflower();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(toSet), toSet, null);
@@ -152,5 +151,15 @@ public class GrassBlock : MonoBehaviour
     public void ShovelItemLand()
     {
         SetDirtState(DirtState.Fertile);
+    }
+
+    public void GrowSunflower()
+    {
+        Instantiate(sunflowerPrefab, transform);
+    }
+
+    public void HarvestSunflower()
+    {
+        // have the sunflower be upprooted and despawn
     }
 }
