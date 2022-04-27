@@ -21,11 +21,13 @@ public class ItemSpawner : MonoBehaviour
 
     private void SpawnSeed()
     {
-        Instantiate(seedPrefab, transform.position, Quaternion.identity);
+        var seed = Instantiate(seedPrefab, transform.position, Quaternion.identity);
+        seed.GetComponent<Seed>().SpawnLaunch();
     }
 
     private void SpawnShovel()
     {
-        Instantiate(shovelPrefab, transform.position, Quaternion.identity);
+        var shovel = Instantiate(shovelPrefab, transform.position, Quaternion.identity);
+        shovel.GetComponent<Shovel>().SpawnLaunch();
     }
 }

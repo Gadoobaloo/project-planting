@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class Seed : Item
 {
-    private List<Collider2D> collider2Ds = new List<Collider2D>();
+    private readonly List<Collider2D> _collider2Ds = new List<Collider2D>();
 
-    public override void Activate()
+    public override void ActivateCustom()
     {
+        float randTorque = Random.Range(-50f, 50f);
+
         Launch(0f, 800f);
+        rb.AddTorque(randTorque);
     }
 
     public override void SpawnLaunch()
@@ -25,25 +28,18 @@ public class Seed : Item
         }
     }
 
-    private void Update()
+    public override void Bounce()
     {
-        if(transform.position.y < -8) Destroy(gameObject);
-
-        if (c2D.IsTouching(FilterGrassBlock) && !IsLanded)
-        {
-            Land();
-        }
+        Launch(-50f, 50f, 400f, 400f);
     }
 
-    private void Land()
+    public override void LandCustom()
     {
-        IsLanded = true;
+        c2D.GetContacts(FilterGrassBlock, _collider2Ds);
         
-        c2D.GetContacts(FilterGrassBlock, collider2Ds);
-        
-        if (collider2Ds.Count == 0)IsLanded = false;
+        if (_collider2Ds.Count == 0) SetIsLanded(false);
 
-        foreach (var t in collider2Ds.Where(t => t.GetComponent<GrassBlock>() != null))
+        foreach (var t in _collider2Ds.Where(t => t.GetComponent<GrassBlock>() != null))
         {
             if (t.GetComponent<GrassBlock>().GetIsFertile())
             {
@@ -52,9 +48,21 @@ public class Seed : Item
             }
             else
             {
+                var transform1 = transform;
+                var position = transform1.position;
+                transform1.position = new Vector3(position.x, position.y, 2f);
                 spriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
                 Destroy(gameObject, 0.5f);
             }
         }
+    }
+
+    public override void RiseCustom()
+    {
+    }
+
+    public override void FallCustom()
+    {
+        SetIsActivated(false);
     }
 }

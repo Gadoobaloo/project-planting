@@ -5,19 +5,27 @@ enum DirtState {None, Small, Medium, Fertile, Planted}
 
 public class GrassBlock : MonoBehaviour
 {
+    private MyPlayerControls _controls;
+
     [SerializeField] private Transform sunflowerPrefab;
     [SerializeField] private SpriteRenderer spriteRendererShovel;
     [SerializeField] private SpriteRenderer spriteRendererDirt;
-
     [SerializeField] private Animator shovelAnimator;
-
     [SerializeField] private Sprite[] dirtStateSprites;
     
+    private Sunflower _sunflower;
+
     private bool _isDigReady;
     private bool _isDigging;
+    private bool _isGrowingFlower;
 
     private DirtState _currentDirtState;
     private float _timer;
+
+    private void Awake()
+    {
+        _controls = new MyPlayerControls();
+    }
 
     private void Start()
     {
@@ -30,17 +38,20 @@ public class GrassBlock : MonoBehaviour
         HideShovel();
     }
 
+    private void OnEnable()
+    {
+        _controls.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _controls.Disable();
+    }
+
     private void Update()
     {
-        if (Input.GetMouseButton(0) && _isDigReady && !_isDigging)
-        {
-            DigStart();
-        }
-
-        if (Input.GetMouseButtonUp(0) && _isDigging)
-        {
-            DigStop();
-        }
+        _controls.Glove.PrimaryButton.performed += ctx => DigStart();
+        _controls.Glove.PrimaryButton.canceled += ctx => DigStop();
 
         if (_isDigging)
         {
@@ -72,6 +83,8 @@ public class GrassBlock : MonoBehaviour
 
     private void DigStart()
     {
+        if(_isDigReady == false) return;
+        
         _isDigging = true;
         
         //todo- have animation speed change based on game state
@@ -80,6 +93,7 @@ public class GrassBlock : MonoBehaviour
 
     private void DigStop()
     {
+        if (!_isDigging) return;
         _isDigging = false;
         
         shovelAnimator.Play("shovelDiggingAnimation", 0, 0);
@@ -153,13 +167,26 @@ public class GrassBlock : MonoBehaviour
         SetDirtState(DirtState.Fertile);
     }
 
-    public void GrowSunflower()
+    private void GrowSunflower()
     {
-        Instantiate(sunflowerPrefab, transform);
+        var flower = Instantiate(sunflowerPrefab, transform);
+        _isGrowingFlower = true;
+
+        _sunflower = flower.GetComponent<Sunflower>();
+    }
+
+    public void SpeedUpFlowerGrowth()
+    {
+        if(_sunflower != null) _sunflower.Water();
     }
 
     public void HarvestSunflower()
     {
-        // have the sunflower be upprooted and despawn
+        // have the sunflower be uprooted and despawn
+    }
+
+    public bool GetIsGrowingFlower()
+    {
+        return _isGrowingFlower;
     }
 }

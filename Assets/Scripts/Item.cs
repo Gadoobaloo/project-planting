@@ -1,5 +1,4 @@
 using UnityEngine;
-//using Random = UnityEngine.Random;
 
 public abstract class Item : MonoBehaviour
 {
@@ -9,28 +8,24 @@ public abstract class Item : MonoBehaviour
 
     protected ContactFilter2D FilterGrassBlock;
 
-    protected bool IsLanded;
+    private bool _isLanded;
+    private bool _isRising;
+    private bool _isFalling;
+    private bool _isActivated;
 
     private void Start()
     {
         FilterGrassBlock.SetDepth(12f, 12f);
-        IsLanded = false;
     }
 
     private void Update()
     {
         if(transform.position.y < -8) Destroy(gameObject);
-
-        if (c2D.IsTouching(FilterGrassBlock) && !IsLanded)
-        {
-            IsLanded = true;
-            spriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
-            Destroy(gameObject, 0.5f);
-        }
+        
+        if (rb.velocity.y > 0 && !_isRising) RiseUniversal();
+        if (rb.velocity.y < 0 && !_isFalling) FallUniversal();
+        if (c2D.IsTouching(FilterGrassBlock) && !_isActivated) LandUniversal();
     }
-
-    public abstract void Activate();
-    public abstract void SpawnLaunch();
 
     protected void Launch(float x, float y)
     {
@@ -45,8 +40,79 @@ public abstract class Item : MonoBehaviour
         rb.AddForce(new Vector2(x, y));
     }
 
+    private void RiseUniversal()
+    {
+        _isRising = true;
+        _isFalling = false;
+        _isLanded = false;
+        
+        RiseCustom();
+    }
+
+    private void FallUniversal()
+    {
+        _isFalling = true;
+        _isRising = false;
+        _isLanded = false;
+        
+        FallCustom();
+    }
+
+    private void LandUniversal()
+    {
+        _isRising = false;
+        _isFalling = false;
+        _isLanded = true;
+
+        LandCustom();
+    }
+
+    public void ActivateUniversal()
+    {
+        _isActivated = true;
+         
+        ActivateCustom();
+    }
+
+    public bool GetIsRising()
+    {
+        return _isRising;
+    }
+
+    protected void SetIsRising(bool toSet)
+    {
+        _isRising = toSet;
+    }
+
+    public bool GetIsFalling()
+    {
+        return _isFalling;
+    }
+    
     public bool GetIsLanded()
     {
-        return IsLanded;
+        return _isLanded;
     }
+
+    protected void SetIsLanded(bool toSet)
+    {
+        _isLanded = toSet;
+    }
+
+    public bool GetIsActivated()
+    {
+        return _isActivated;
+    }
+
+    protected void SetIsActivated(bool toSet)
+    {
+        _isActivated = toSet;
+    }
+
+    public abstract void ActivateCustom();
+    public abstract void RiseCustom();
+    public abstract void FallCustom();
+    public abstract void LandCustom();
+    public abstract void SpawnLaunch();
+    public abstract void Bounce();
 }

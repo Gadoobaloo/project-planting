@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Sunflower : MonoBehaviour
 {
@@ -7,7 +9,12 @@ public class Sunflower : MonoBehaviour
 
     private const int MaxSize = 8;
     private int _goalSize;
+    
+    private bool _isWatered;
+    private bool _isInfested;
 
+    public static event EventHandler OnSunflowerGrown;
+    
     private void Start()
     {
         transform.localPosition = new Vector3(0, 1, 0);
@@ -22,18 +29,16 @@ public class Sunflower : MonoBehaviour
     
     private void GrowStem()
     {
-        Instantiate(stemPrefab, transform);
+        var part = Instantiate(stemPrefab, transform);
 
-        var childCount = transform.childCount;
-        transform.GetChild(childCount -1).GetComponent<SunflowerPart>().SetHeight(childCount -1);
+        part.GetComponent<SunflowerPart>().ParentInitialize(transform.childCount -1, _isWatered, _isInfested);
     }
 
     private void GrowHead()
     {
-        Instantiate(headPrefab, transform);
+        var part = Instantiate(headPrefab, transform);
         
-        var childCount = transform.childCount;
-        transform.GetChild(childCount -1).GetComponent<SunflowerPart>().SetHeight(childCount -1);
+        part.GetComponent<SunflowerPart>().ParentInitialize(transform.childCount -1, _isWatered, _isInfested);
     }
 
     private void GrowNext()
@@ -42,11 +47,27 @@ public class Sunflower : MonoBehaviour
 
         if (childCount < _goalSize - 1) GrowStem();
         if (childCount == _goalSize - 1) GrowHead();
-        if (childCount >= _goalSize) Debug.Log("sunflower has finished growing");
+        if (childCount >= _goalSize) OnSunflowerGrown?.Invoke(this, EventArgs.Empty);
     }
 
     public void SegmentFinish()
     {
         GrowNext();
+    }
+
+    public void Water()
+    {
+        if (!_isWatered) _isWatered = true;
+        transform.GetChild(transform.childCount -1).GetComponent<SunflowerPart>().SetIsWatered(true);
+    }
+
+    public void Infest()
+    {
+        _isInfested = true;
+    }
+
+    public void UnInfest()
+    {
+        _isInfested = false;
     }
 }

@@ -50,6 +50,9 @@ TagManager:
   - name: Items
     uniqueID: 1182782447
     locked: 0
+  - name: Enemies
+    uniqueID: 2822150987
+    locked: 0
   - name: Glove
     uniqueID: 61680227
     locked: 0

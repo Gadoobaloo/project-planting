@@ -1,67 +1,62 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Shovel : Item
 {
-    private bool _isActivated;
     private List<Collider2D> collider2Ds = new List<Collider2D>();
 
-
-    private void Update()
+    public override void ActivateCustom()
     {
-        if (_isActivated && rb.velocity.y < 0)
-        {
-            Dive();
-        }
-
-        if (c2D.IsTouching(FilterGrassBlock) && !IsLanded)
-        {
-            Land();
-        }
+        c2D.isTrigger = true;
+        rb.freezeRotation = false;
+        rb.AddTorque(-1000f);
+        rb.AddForce(new Vector2(0, 4000));
     }
 
-    public override void Activate()
+    public override void FallCustom()
     {
-        rb.freezeRotation = false;
-        rb.AddTorque(-500f);
-        rb.AddForce(new Vector2(0, 4000));
-        _isActivated = true;
+        if(GetIsActivated()) Dive();
     }
 
     public override void SpawnLaunch()
     {
-        Debug.Log("shovel spawned");
+    }
+
+    public override void Bounce()
+    {
     }
 
     private void Dive()
     {
-        _isActivated = false;
-
+        SetIsActivated(false);
+        c2D.isTrigger = false;
         rb.freezeRotation = true;
         rb.rotation = 0;
         rb.AddForce(new Vector2(0, -10000));
     }
 
-    private void Land()
+    public override void LandCustom()
     {
-        IsLanded = true;
-
         c2D.GetContacts(FilterGrassBlock, collider2Ds);
 
-        if (collider2Ds.Count == 0) IsLanded = false;
-        
-        foreach (var t in collider2Ds.Where(t => t.GetComponent<GrassBlock>() != null))
+        if (collider2Ds.Count == 0) SetIsLanded(false);
+
+        if (collider2Ds[0].GetComponent<GrassBlock>() != null)
         {
-            if (t.GetComponent<GrassBlock>().GetIsFertile())
+            if (collider2Ds[0].GetComponent<GrassBlock>().GetIsFertile())
             {
                 spriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
-                Destroy(gameObject, 0.5f);            }
+                Destroy(gameObject, 0.5f);
+            }
             else
             {
-                t.GetComponent<GrassBlock>().ShovelItemLand();
+                collider2Ds[0].GetComponent<GrassBlock>().ShovelItemLand();
                 Destroy(gameObject);
             }
         }
+    }
+
+    public override void RiseCustom()
+    {
     }
 }

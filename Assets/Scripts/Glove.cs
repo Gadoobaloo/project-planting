@@ -4,65 +4,79 @@ using UnityEngine;
 public class Glove : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private Collider2D circleCollider2D;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Sprite[] spriteArray;
 
-    private Collider2D _circleCollider2D;
-    
-    private Vector3 _mousePosition;
-    
+    private MyPlayerControls _controls;
+    private float speed = 10;
+    private Vector2 _controllerDirection;
+
     private ContactFilter2D _filterItems;
     private ContactFilter2D _filterGrassBlock;
 
     private bool _isGrabbing;
     private bool _isTouchGrass;
-    
+
+    private void Awake()
+    {
+        _controls = new MyPlayerControls();
+    }
+
     private void Start()
     {
         _filterItems.SetDepth(11f, 11f);
         _filterGrassBlock.SetDepth(12f, 12f);
         
         Cursor.visible = false;
-        _circleCollider2D = GetComponent<CircleCollider2D>();
 
         _isGrabbing = false;
         _isTouchGrass = false;
     }
-    
+
+    private void OnEnable()
+    {
+        _controls.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _controls.Disable();
+    }
+
     private void Update()
     {
-        _mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        _mousePosition.z = 0;
-        transform.position = _mousePosition;
+        _controls.Glove.MouseMove.performed += ctx => FollowMousePosition(ctx.ReadValue<Vector2>());
+        _controls.Glove.KeysMove.performed += ctx => ControllerMovement(ctx.ReadValue<Vector2>());
         
-        if (Input.GetMouseButtonDown(0) && !_isTouchGrass)
-        {
-            Grab();
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            DropItem();
-        }
-
-        if (Input.GetMouseButtonDown(1) && _isGrabbing)
-        {
-            LaunchItem();
-        }
+        _controls.Glove.PrimaryButton.performed += ctx => Grab();
+        _controls.Glove.PrimaryButton.canceled += ctx => DropItem();
+        _controls.Glove.SecondaryButton.performed += ctx => LaunchItem();
         
-        if (_circleCollider2D.IsTouching(_filterGrassBlock))
-        {
-            Debug.Log("here");
-            //TouchGrass();
-        }
+        transform.Translate(_controllerDirection * speed * Time.deltaTime); //todo- reset controller direction when another input is detected
+    }
+
+    private void FollowMousePosition(Vector2 position)
+    {
+        var mousePos = mainCamera.ScreenToWorldPoint(position);
+
+        transform.position = new Vector3(mousePos.x, mousePos.y, 10f);
+    }
+
+    
+    private void ControllerMovement(Vector2 coordinates)
+    {
+        _controllerDirection = coordinates;
     }
     
     private void Grab()
     {
+        if (_isTouchGrass) return;
+        
         spriteRenderer.sprite = spriteArray[1];
         
         var collider2Ds = new List<Collider2D>();
-        _circleCollider2D.OverlapCollider(_filterItems, collider2Ds);
+        circleCollider2D.OverlapCollider(_filterItems, collider2Ds);
         
         foreach (var c2D in collider2Ds)
         {
@@ -84,7 +98,7 @@ public class Glove : MonoBehaviour
             }
             else
             {
-                c2D.GetComponent<Item>().Activate();
+                c2D.GetComponent<Item>().ActivateUniversal();
             }
         }
     }
@@ -103,13 +117,15 @@ public class Glove : MonoBehaviour
 
     private void LaunchItem()
     {
+        if (!_isGrabbing) return;
+        
         spriteRenderer.sprite = spriteArray[2];
 
         var allChildren = GetComponentsInChildren<Item>();
         foreach (var item in allChildren)
         {
             UnchildItem(item);
-            item.Activate();
+            item.ActivateUniversal();
         }
     }
 
@@ -128,8 +144,6 @@ public class Glove : MonoBehaviour
     public void HideGlove()
     {
         _isTouchGrass = true;
-        //todo- if the glove is holding something launch it, and make sure it doesn't count as landing;
-        
         spriteRenderer.color = new Color(1f, 1f, 1f, 0f);
     }
 
