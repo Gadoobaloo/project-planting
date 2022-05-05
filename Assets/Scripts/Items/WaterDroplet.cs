@@ -7,20 +7,20 @@ using UnityEngine;
 public class WaterDroplet : Item
 {
     private List<Collider2D> _collider2Ds = new List<Collider2D>();
-    
-    public override void ActivateCustom()
+
+    protected override void ActivateCustom()
     {
     }
 
-    public override void RiseCustom()
+    protected override void RiseCustom()
     {
     }
 
-    public override void FallCustom()
+    protected override void FallCustom()
     {
     }
 
-    public override void LandCustom()
+    protected override void LandCustom()
     {
     }
 
@@ -28,8 +28,13 @@ public class WaterDroplet : Item
     {
     }
 
-    public override void Bounce()
+    public override void BounceCustom()
     {
+    }
+
+    protected override void DestroyCustom()
+    {
+        
     }
 
     public void SpraySpawn(Vector3 pos ,int i)
