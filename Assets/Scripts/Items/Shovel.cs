@@ -55,7 +55,9 @@ public class Shovel : Item
 
         if (collider2Ds[0].GetComponent<GrassBlock>() != null)
         {
-            if (collider2Ds[0].GetComponent<GrassBlock>().GetIsFertile())
+            var dirtState = collider2Ds[0].GetComponent<GrassBlock>().CurrenDirtState;
+            
+            if ( dirtState == DirtState.Fertile || dirtState == DirtState.Planted)
             {
                 spriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
                 Destroy(gameObject, 0.5f);

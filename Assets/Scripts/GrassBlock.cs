@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-internal enum DirtState
+public enum DirtState
 { None, Small, Medium, Fertile, Planted }
 
 public class GrassBlock : MonoBehaviour
@@ -13,7 +13,10 @@ public class GrassBlock : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRendererDirt;
     [SerializeField] private Animator shovelAnimator;
     [SerializeField] private Sprite[] dirtStateSprites;
+    public DirtState CurrenDirtState { get; private set; }
 
+    private float _timer;
+    
     private Sunflower _sunflower;
 
     private bool _isDigReady;
@@ -26,10 +29,7 @@ public class GrassBlock : MonoBehaviour
             return _sunflower.IsGrowing;
         }
     }
-
-    private DirtState _currentDirtState;
-    private float _timer;
-
+    
     private void Awake()
     {
         _controls = new MyPlayerControls();
@@ -82,7 +82,7 @@ public class GrassBlock : MonoBehaviour
 
     public void ShowShovel()
     {
-        if (_currentDirtState != DirtState.Fertile & _currentDirtState != DirtState.Planted)
+        if (CurrenDirtState != DirtState.Fertile & CurrenDirtState != DirtState.Planted)
         {
             _isDigReady = true;
             spriteRendererShovel.color = new Color(1f, 1f, 1f, 1f);
@@ -110,9 +110,9 @@ public class GrassBlock : MonoBehaviour
 
     private void SetDirtState(DirtState toSet)
     {
-        _currentDirtState = toSet;
+        CurrenDirtState = toSet;
 
-        switch (_currentDirtState)
+        switch (CurrenDirtState)
         {
             case (DirtState.None):
                 spriteRendererDirt.sprite = dirtStateSprites[0];
@@ -147,7 +147,7 @@ public class GrassBlock : MonoBehaviour
 
     private void TimerAdvanceDirtState()
     {
-        switch (_currentDirtState)
+        switch (CurrenDirtState)
         {
             case DirtState.None:
                 SetDirtState(DirtState.Small);
@@ -170,7 +170,7 @@ public class GrassBlock : MonoBehaviour
 
     public bool GetIsFertile()
     {
-        return _currentDirtState == DirtState.Fertile;
+        return CurrenDirtState == DirtState.Fertile;
     }
 
     public void PlantSeed()
@@ -180,7 +180,7 @@ public class GrassBlock : MonoBehaviour
 
     public void ShovelItemLand()
     {
-        if (_currentDirtState != DirtState.Planted)
+        if (CurrenDirtState != DirtState.Planted)
         {
             SetDirtState(DirtState.Fertile);
         }

@@ -15,8 +15,6 @@ public class Seed : Item
 
     public override void SpawnLaunch()
     {
-        GameState.NumOfSeeds += 1;
-
         if (transform.position.x <= 0)
         {
             Launch(200, 600, 100, 400);
@@ -67,7 +65,6 @@ public class Seed : Item
 
     protected override void DestroyCustom()
     {
-        GameState.NumOfSeeds -= 1;
         Destroy(gameObject);
     }
 }

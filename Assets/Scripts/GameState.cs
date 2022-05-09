@@ -11,8 +11,6 @@ public class GameState : MonoBehaviour
     public static ContactFilter2D GrassBlockFilter;
 
     private static bool IsTutorial { get; set; }
-    public static int NumOfSeeds { get; set; }
-    public static int NumOfShovels { get; set; }
 
     private void Awake()
     {
