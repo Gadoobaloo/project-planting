@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Seed : Item
@@ -16,36 +15,34 @@ public class Seed : Item
 
     public override void SpawnLaunch()
     {
-        GameState.SetNumOfSeeds(GameState.GetNumOfSeeds() +1);
-        
+        GameState.NumOfSeeds += 1;
+
         if (transform.position.x <= 0)
         {
-            //seed is on left
             Launch(200, 600, 100, 400);
         }
         else
         {
-            //seed is on right
             Launch(-300, -600, 150, 250);
         }
     }
 
-    public override void BounceCustom()
+    protected override void BounceCustom()
     {
         Launch(-50f, 50f, 400f, 400f);
     }
 
     protected override void LandCustom()
     {
-        c2D.GetContacts(FilterGrassBlock, _collider2Ds);
-        
-        if (_collider2Ds.Count == 0) SetIsLanded(false);
+        c2D.GetContacts(GameState.GrassBlockFilter, _collider2Ds);
 
-        foreach (var t in _collider2Ds.Where(t => t.GetComponent<GrassBlock>() != null))
+        if (_collider2Ds.Count == 0) IsLanded = false;
+
+        if (_collider2Ds[0].GetComponent<GrassBlock>() != null)
         {
-            if (t.GetComponent<GrassBlock>().GetIsFertile())
+            if (_collider2Ds[0].GetComponent<GrassBlock>().GetIsFertile())
             {
-                t.GetComponent<GrassBlock>().PlantSeed();
+                _collider2Ds[0].GetComponent<GrassBlock>().PlantSeed();
                 Destroy(gameObject);
             }
             else
@@ -65,12 +62,12 @@ public class Seed : Item
 
     protected override void FallCustom()
     {
-        SetIsActivated(false);
+        IsActivated = false;
     }
 
     protected override void DestroyCustom()
     {
-        GameState.SetNumOfSeeds(GameState.GetNumOfSeeds() -1);
+        GameState.NumOfSeeds -= 1;
         Destroy(gameObject);
     }
 }

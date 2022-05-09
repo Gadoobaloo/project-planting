@@ -13,6 +13,8 @@ public class BugEnemy : MonoBehaviour
 
     private readonly List<Collider2D> _collider2Ds = new List<Collider2D>();
 
+    [SerializeField] private float aggression;
+
     private bool _isMidAir;
     private bool _isFlying;
     private bool _isEating;
@@ -202,6 +204,12 @@ public class BugEnemy : MonoBehaviour
         cc2D.isTrigger = true;
         animator.SetTrigger(Die1);
         DropSeed();
+
+        rb.freezeRotation = false;
+        float randTorque = Random.Range(5f, 8f);
+        int directionMultiplier = Random.Range(0, 2) == 0 ? 1: -1;
+        
+        rb.AddTorque(randTorque * directionMultiplier);
         rb.AddForce(new Vector2(0, 200));
     }
 
@@ -210,7 +218,7 @@ public class BugEnemy : MonoBehaviour
         foreach (var child in transform.GetComponentsInChildren<Item>())
         {
             UnChildItem(child);
-            child.BounceCustom();
+            child.BounceUniversal();
         }
     }
 

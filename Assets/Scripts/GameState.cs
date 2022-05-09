@@ -1,18 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
+public enum GameMode
+{ Standard, Tutorial }
 
 public class GameState : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private GameTimer _gameTimer;
 
-    // Update is called once per frame
-    void Update()
+    public static ContactFilter2D ItemFilter;
+    public static ContactFilter2D GrassBlockFilter;
+
+    private static bool IsTutorial { get; set; }
+    public static int NumOfSeeds { get; set; }
+    public static int NumOfShovels { get; set; }
+
+    private void Awake()
     {
-        
+        ItemFilter.SetDepth(11f, 11f);
+        GrassBlockFilter.SetDepth(12f, 12f);
     }
 }

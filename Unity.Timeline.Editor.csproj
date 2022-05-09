@@ -200,9 +200,9 @@
      <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\treeview\ItemGui\ISelectable.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Animation\ClipCurveEditor.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Actions\TimelineAction.cs" />
-     <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\treeview\TimelineClipHandle.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Actions\TrackActions.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Items\MarkerItem.cs" />
+     <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\treeview\TimelineClipHandle.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Manipulators\AddDelete\AddDeleteItemModeMix.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\inspectors\CurvesOwner\CurvesOwnerInspectorHelper.cs" />
      <Compile Include="Library\PackageCache\com.unity.timeline@1.4.8\Editor\Window\TimelineWindow.cs" />

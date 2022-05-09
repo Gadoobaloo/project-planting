@@ -1,11 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PauseScreen : MonoBehaviour
 {
     [SerializeField] private GameObject pauseScreen;
+    public bool CanPause { get; set; }
     private bool _isPaused;
 
     private MyPlayerControls _controls;
@@ -15,7 +13,7 @@ public class PauseScreen : MonoBehaviour
         _controls = new MyPlayerControls();
     }
 
-    void Start()
+    private void Start()
     {
         ResumeGame();
     }
@@ -30,7 +28,7 @@ public class PauseScreen : MonoBehaviour
         _controls.Disable();
     }
 
-    void Update()
+    private void Update()
     {
         _controls.UI.PauseStart.performed += ctx => TogglePause();
     }

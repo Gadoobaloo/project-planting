@@ -22,7 +22,7 @@ public class SunflowerPart : MonoBehaviour
     private void Start()
     {
         _timer = 0;
-        
+
         _growCooldown = DetermineCooldown(_isWatered, _isInfested);
         _isGrowing = true;
         _currentSpriteIndex = 0;
@@ -33,7 +33,7 @@ public class SunflowerPart : MonoBehaviour
 
     private void Update()
     {
-        if(_isGrowing) _timer += Time.deltaTime;
+        if (_isGrowing) _timer += Time.deltaTime;
 
         if (_timer >= _growCooldown)
         {
@@ -54,19 +54,19 @@ public class SunflowerPart : MonoBehaviour
     {
         _currentSpriteIndex++;
         spriteRenderer.sprite = sprites[_currentSpriteIndex];
-        
+
         if (_currentSpriteIndex >= _maxSpriteIndex)
         {
             _isGrowing = false;
             AlertParent();
         }
     }
-    
+
     private void AlertParent()
     {
         transform.parent.GetComponent<Sunflower>().SegmentFinish();
     }
-    
+
     public void ParentInitialize(int height, bool wateredBool, bool infestBool)
     {
         transform.localPosition = new Vector3(0, height, 0);
@@ -82,6 +82,5 @@ public class SunflowerPart : MonoBehaviour
 
     public void SetIsInfested(bool toSet)
     {
-        
     }
 }

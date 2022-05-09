@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8890773037272222824}
   - component: {fileID: 8890773037272222830}
   - component: {fileID: 8890773037272222829}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BugEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8890773037272222827}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.22, y: -1.89, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: -1472816309
   m_SortingLayer: 4
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1988228873834173077, guid: 113b2fa14aa35d44dbb7c830fcede1e3, type: 3}
+  m_Sprite: {fileID: 2511169398878239344, guid: cef01641c7f43474ebfe75cd5605f0e3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -156,4 +156,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 8890773037272222831}
   cc2D: {fileID: 8890773037272222824}
-  _animator: {fileID: 8890773037272222830}
+  animator: {fileID: 8890773037272222830}

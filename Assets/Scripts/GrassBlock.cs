@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
 
-enum DirtState {None, Small, Medium, Fertile, Planted}
+internal enum DirtState
+{ None, Small, Medium, Fertile, Planted }
 
 public class GrassBlock : MonoBehaviour
 {
@@ -12,12 +13,19 @@ public class GrassBlock : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRendererDirt;
     [SerializeField] private Animator shovelAnimator;
     [SerializeField] private Sprite[] dirtStateSprites;
-    
+
     private Sunflower _sunflower;
 
     private bool _isDigReady;
     private bool _isDigging;
-    private bool _isGrowingFlower;
+
+    public bool IsGrowingFlower
+    {
+        get
+        {
+            return _sunflower.IsGrowing;
+        }
+    }
 
     private DirtState _currentDirtState;
     private float _timer;
@@ -58,7 +66,7 @@ public class GrassBlock : MonoBehaviour
             _timer += Time.deltaTime;
         }
 
-        if (_timer >= 1f)
+        if (_timer >= 0.7f)
         {
             TimerAdvanceDirtState();
             _timer = 0f;
@@ -68,7 +76,7 @@ public class GrassBlock : MonoBehaviour
     public void HideShovel()
     {
         _isDigReady = false;
-        if(_isDigging) DigStop();
+        if (_isDigging) DigStop();
         spriteRendererShovel.color = new Color(1f, 1f, 1f, 0f);
     }
 
@@ -83,10 +91,10 @@ public class GrassBlock : MonoBehaviour
 
     private void DigStart()
     {
-        if(_isDigReady == false) return;
-        
+        if (_isDigReady == false) return;
+
         _isDigging = true;
-        
+
         //todo- have animation speed change based on game state
         shovelAnimator.speed = 1f;
     }
@@ -95,7 +103,7 @@ public class GrassBlock : MonoBehaviour
     {
         if (!_isDigging) return;
         _isDigging = false;
-        
+
         shovelAnimator.Play("shovelDiggingAnimation", 0, 0);
         shovelAnimator.speed = 0f;
     }
@@ -103,30 +111,35 @@ public class GrassBlock : MonoBehaviour
     private void SetDirtState(DirtState toSet)
     {
         _currentDirtState = toSet;
-        
+
         switch (_currentDirtState)
         {
             case (DirtState.None):
                 spriteRendererDirt.sprite = dirtStateSprites[0];
                 spriteRendererDirt.color = new Color(1f, 1f, 1f, 0f);
                 break;
+
             case DirtState.Small:
                 spriteRendererDirt.sprite = dirtStateSprites[0];
                 spriteRendererDirt.color = new Color(1f, 1f, 1f, 1f);
                 break;
+
             case DirtState.Medium:
                 spriteRendererDirt.sprite = dirtStateSprites[1];
                 spriteRendererDirt.color = new Color(1f, 1f, 1f, 1f);
                 break;
+
             case DirtState.Fertile:
                 spriteRendererDirt.sprite = dirtStateSprites[2];
                 spriteRendererDirt.color = new Color(1f, 1f, 1f, 1f);
                 break;
+
             case DirtState.Planted:
                 spriteRendererDirt.sprite = dirtStateSprites[3];
                 spriteRendererDirt.color = new Color(1f, 1f, 1f, 1f);
                 GrowSunflower();
                 break;
+
             default:
                 throw new ArgumentOutOfRangeException(nameof(toSet), toSet, null);
         }
@@ -139,13 +152,16 @@ public class GrassBlock : MonoBehaviour
             case DirtState.None:
                 SetDirtState(DirtState.Small);
                 break;
+
             case DirtState.Small:
                 SetDirtState(DirtState.Medium);
                 break;
+
             case DirtState.Medium:
                 SetDirtState(DirtState.Fertile);
                 HideShovel();
                 break;
+
             default:
                 HideShovel();
                 break;
@@ -164,29 +180,26 @@ public class GrassBlock : MonoBehaviour
 
     public void ShovelItemLand()
     {
-        SetDirtState(DirtState.Fertile);
+        if (_currentDirtState != DirtState.Planted)
+        {
+            SetDirtState(DirtState.Fertile);
+        }
     }
 
     private void GrowSunflower()
     {
         var flower = Instantiate(sunflowerPrefab, transform);
-        _isGrowingFlower = true;
 
         _sunflower = flower.GetComponent<Sunflower>();
     }
 
     public void SpeedUpFlowerGrowth()
     {
-        if(_sunflower != null) _sunflower.Water();
+        if (_sunflower != null) _sunflower.Water();
     }
 
     public void HarvestSunflower()
     {
         // have the sunflower be uprooted and despawn
-    }
-
-    public bool GetIsGrowingFlower()
-    {
-        return _isGrowingFlower;
     }
 }

@@ -6,25 +6,30 @@ public abstract class Item : MonoBehaviour
     [SerializeField] protected SpriteRenderer spriteRenderer;
     [SerializeField] protected Collider2D c2D;
 
-    protected ContactFilter2D FilterGrassBlock;
+    [SerializeField] protected Transform offscreenTF;
+    [SerializeField] protected SpriteRenderer offscreenSR;
 
-    private bool _isLanded;
-    private bool _isRising;
-    private bool _isFalling;
-    private bool _isActivated;
-
-    private void Start()
-    {
-        FilterGrassBlock.SetDepth(12f, 12f);
-    }
+    public bool IsLanded { get; set; }
+    public bool IsRising { get; set; }
+    public bool IsFalling { get; set; }
+    public bool IsActivated { get; set; }
 
     private void Update()
     {
-        if(transform.position.y < -8) Destroy(gameObject);
-        
-        if (rb.velocity.y > 0 && !_isRising) RiseUniversal();
-        if (rb.velocity.y < 0 && !_isFalling) FallUniversal();
-        if (c2D.IsTouching(FilterGrassBlock) && !_isActivated) LandUniversal();
+        if (transform.position.y < -8) Destroy(gameObject);
+
+        if (rb.velocity.y > 0 && !IsRising) RiseUniversal();
+        if (rb.velocity.y < 0 && !IsFalling) FallUniversal();
+        if (c2D.IsTouching(GameState.GrassBlockFilter) && !IsActivated) LandUniversal();
+
+        if (IsFalling && !GetComponent<Renderer>().isVisible && transform.position.y > 0)
+        {
+            ShowIcon(true);
+        }
+        else
+        {
+            ShowIcon(false);
+        }
     }
 
     protected void Launch(float x, float y)
@@ -36,42 +41,47 @@ public abstract class Item : MonoBehaviour
     {
         var x = Random.Range(xMin, xMax);
         var y = Random.Range(yMin, yMax);
-        
+
         rb.AddForce(new Vector2(x, y));
     }
 
     private void RiseUniversal()
     {
-        _isRising = true;
-        _isFalling = false;
-        _isLanded = false;
-        
+        IsRising = true;
+        IsFalling = false;
+        IsLanded = false;
+
         RiseCustom();
     }
 
     private void FallUniversal()
     {
-        _isFalling = true;
-        _isRising = false;
-        _isLanded = false;
-        
+        IsFalling = true;
+        IsRising = false;
+        IsLanded = false;
+
         FallCustom();
     }
 
     private void LandUniversal()
     {
-        _isRising = false;
-        _isFalling = false;
-        _isLanded = true;
+        IsRising = false;
+        IsFalling = false;
+        IsLanded = true;
 
         LandCustom();
     }
 
     public void ActivateUniversal()
     {
-        _isActivated = true;
-         
+        IsActivated = true;
+
         ActivateCustom();
+    }
+
+    public void BounceUniversal()
+    {
+        BounceCustom();
     }
 
     public void DestroyUniversal()
@@ -79,46 +89,25 @@ public abstract class Item : MonoBehaviour
         DestroyCustom();
     }
 
-    public bool GetIsRising()
+    private void ShowIcon(bool show)
     {
-        return _isRising;
-    }
+        offscreenSR.enabled = show;
 
-    protected void SetIsRising(bool toSet)
-    {
-        _isRising = toSet;
-    }
-
-    public bool GetIsFalling()
-    {
-        return _isFalling;
-    }
-    
-    public bool GetIsLanded()
-    {
-        return _isLanded;
-    }
-
-    protected void SetIsLanded(bool toSet)
-    {
-        _isLanded = toSet;
-    }
-
-    public bool GetIsActivated()
-    {
-        return _isActivated;
-    }
-
-    protected void SetIsActivated(bool toSet)
-    {
-        _isActivated = toSet;
+        offscreenTF.position = new Vector3(transform.position.x, 5.3f, 0f);
+        offscreenTF.rotation = Quaternion.identity;
     }
 
     protected abstract void ActivateCustom();
+
     protected abstract void RiseCustom();
+
     protected abstract void FallCustom();
+
     protected abstract void LandCustom();
+
     public abstract void SpawnLaunch();
-    public abstract void BounceCustom();
+
+    protected abstract void BounceCustom();
+
     protected abstract void DestroyCustom();
 }

@@ -9,7 +9,7 @@ public class GameTimer : MonoBehaviour
 
     private void Start()
     {
-        _timerStartTime = 180.0f;
+        _timerStartTime = 300.0f;
     }
 
     private void Update()
@@ -18,11 +18,11 @@ public class GameTimer : MonoBehaviour
         {
             _timerStartTime -= Time.deltaTime;
         }
-        
+
         DisplayTime(_timerStartTime);
     }
 
-    void DisplayTime(float toDisplay)
+    private void DisplayTime(float toDisplay)
     {
         if (toDisplay < 0)
         {
@@ -33,5 +33,10 @@ public class GameTimer : MonoBehaviour
         float seconds = Mathf.FloorToInt(toDisplay % 60);
 
         textMeshProUGUI.text = $"{minutes:00}:{seconds:00}";
+    }
+
+    public float GetTimeRemaining()
+    {
+        return _timerStartTime;
     }
 }

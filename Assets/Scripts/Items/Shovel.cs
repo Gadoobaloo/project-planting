@@ -15,14 +15,22 @@ public class Shovel : Item
 
     protected override void FallCustom()
     {
-        if(GetIsActivated()) Dive();
+        if (IsActivated) Dive();
     }
 
     public override void SpawnLaunch()
     {
+        if (transform.position.x <= 0)
+        {
+            Launch(1000, 3000, 4000, 5000);
+        }
+        else
+        {
+            Launch(-1000, -3000, 4000, 5000);
+        }
     }
 
-    public override void BounceCustom()
+    protected override void BounceCustom()
     {
     }
 
@@ -32,7 +40,7 @@ public class Shovel : Item
 
     private void Dive()
     {
-        SetIsActivated(false);
+        IsActivated = false;
         c2D.isTrigger = false;
         rb.freezeRotation = true;
         rb.rotation = 0;
@@ -41,9 +49,9 @@ public class Shovel : Item
 
     protected override void LandCustom()
     {
-        c2D.GetContacts(FilterGrassBlock, collider2Ds);
+        c2D.GetContacts(GameState.GrassBlockFilter, collider2Ds);
 
-        if (collider2Ds.Count == 0) SetIsLanded(false);
+        if (collider2Ds.Count == 0) IsLanded = false;
 
         if (collider2Ds[0].GetComponent<GrassBlock>() != null)
         {
