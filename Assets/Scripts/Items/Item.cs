@@ -9,6 +9,9 @@ public abstract class Item : MonoBehaviour
     [SerializeField] protected Transform offscreenTF;
     [SerializeField] protected SpriteRenderer offscreenSR;
 
+    [SerializeField] protected AudioSource audioSource;
+    [SerializeField] protected AudioClip clankSFX;
+
     public bool IsLanded { get; set; }
     public bool IsRising { get; set; }
     public bool IsFalling { get; set; }
@@ -21,6 +24,7 @@ public abstract class Item : MonoBehaviour
         if (rb.velocity.y > 0 && !IsRising) RiseUniversal();
         if (rb.velocity.y < 0 && !IsFalling) FallUniversal();
         if (c2D.IsTouching(GameState.GrassBlockFilter) && !IsActivated) LandUniversal();
+        if (c2D.IsTouching(GameState.ItemFilter)) ClankUniversal();
 
         if (IsFalling && !GetComponent<Renderer>().isVisible && transform.position.y > 0)
         {
@@ -75,6 +79,7 @@ public abstract class Item : MonoBehaviour
     public void ActivateUniversal()
     {
         IsActivated = true;
+        audioSource.PlayOneShot(clankSFX, GameSettings.volumeSFX);
 
         ActivateCustom();
     }
@@ -89,12 +94,16 @@ public abstract class Item : MonoBehaviour
         DestroyCustom();
     }
 
+    private void ClankUniversal()
+    {
+        if (!audioSource.isPlaying) audioSource.PlayOneShot(clankSFX, GameSettings.volumeSFX);
+    }
+
     private void ShowIcon(bool show)
     {
         offscreenSR.enabled = show;
 
-        offscreenTF.position = new Vector3(transform.position.x, 5.3f, 0f);
-        offscreenTF.rotation = Quaternion.identity;
+        offscreenTF.SetPositionAndRotation(new Vector3(transform.position.x, 5.3f, 0f), Quaternion.identity);
     }
 
     protected abstract void ActivateCustom();

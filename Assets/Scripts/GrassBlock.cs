@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public enum DirtState
 { None, Small, Medium, Fertile, Planted }
@@ -13,23 +14,37 @@ public class GrassBlock : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRendererDirt;
     [SerializeField] private Animator shovelAnimator;
     [SerializeField] private Sprite[] dirtStateSprites;
+
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip digSFX;
+    [SerializeField] private AudioClip plantSFX;
+    [SerializeField] private AudioClip waterPlantSFX;
+
+    private float specialDigPitch = 1.15f;
+
+    [SerializeField] private ScoreSO seedPlantedScoreSO;
+    [SerializeField] private ScoreSO blockFertilizedScoreSO;
+    [SerializeField] private ScoreSO plantsWateredScoreSO;
+
+    private ScoreCounter _scoreCounter;
+
     public DirtState CurrenDirtState { get; private set; }
 
     private float _timer;
-    
+
     private Sunflower _sunflower;
 
     private bool _isDigReady;
     private bool _isDigging;
 
-    public bool IsGrowingFlower
-    {
-        get
-        {
-            return _sunflower.IsGrowing;
-        }
-    }
-    
+    public bool IsGrowingFlower => _sunflower != null && _sunflower.IsGrowing;
+
+    public bool HasGrownFlower => _sunflower != null && _sunflower.HasGrown;
+
+    [SerializeField] private UnityEvent OnSeedPlanted;
+    [SerializeField] private UnityEvent OnBlockFertilized;
+    [SerializeField] private UnityEvent OnWateredFlower;
+
     private void Awake()
     {
         _controls = new MyPlayerControls();
@@ -37,6 +52,14 @@ public class GrassBlock : MonoBehaviour
 
     private void Start()
     {
+        _scoreCounter = FindObjectOfType<ScoreCounter>();
+        if (_scoreCounter != null)
+        {
+            OnSeedPlanted.AddListener(delegate { _scoreCounter.AddScore(seedPlantedScoreSO); });
+            OnBlockFertilized.AddListener(delegate { _scoreCounter.AddScore(blockFertilizedScoreSO); });
+            OnWateredFlower.AddListener(delegate { _scoreCounter.AddScore(plantsWateredScoreSO); });
+        }
+
         _isDigReady = false;
         _isDigging = false;
 
@@ -63,7 +86,7 @@ public class GrassBlock : MonoBehaviour
 
         if (_isDigging)
         {
-            _timer += Time.deltaTime;
+            _timer += Time.unscaledDeltaTime;
         }
 
         if (_timer >= 0.7f)
@@ -94,8 +117,6 @@ public class GrassBlock : MonoBehaviour
         if (_isDigReady == false) return;
 
         _isDigging = true;
-
-        //todo- have animation speed change based on game state
         shovelAnimator.speed = 1f;
     }
 
@@ -121,22 +142,30 @@ public class GrassBlock : MonoBehaviour
 
             case DirtState.Small:
                 spriteRendererDirt.sprite = dirtStateSprites[0];
+                audioSource.PlayOneShot(digSFX, GameSettings.volumeSFX);
                 spriteRendererDirt.color = new Color(1f, 1f, 1f, 1f);
                 break;
 
             case DirtState.Medium:
                 spriteRendererDirt.sprite = dirtStateSprites[1];
+                audioSource.PlayOneShot(digSFX, GameSettings.volumeSFX);
                 spriteRendererDirt.color = new Color(1f, 1f, 1f, 1f);
                 break;
 
             case DirtState.Fertile:
                 spriteRendererDirt.sprite = dirtStateSprites[2];
+
+                audioSource.pitch = specialDigPitch;
+                audioSource.PlayOneShot(digSFX, GameSettings.volumeSFX);
+
                 spriteRendererDirt.color = new Color(1f, 1f, 1f, 1f);
+                OnBlockFertilized.Invoke();
                 break;
 
             case DirtState.Planted:
                 spriteRendererDirt.sprite = dirtStateSprites[3];
                 spriteRendererDirt.color = new Color(1f, 1f, 1f, 1f);
+                audioSource.PlayOneShot(plantSFX, GameSettings.volumeSFX);
                 GrowSunflower();
                 break;
 
@@ -188,6 +217,8 @@ public class GrassBlock : MonoBehaviour
 
     private void GrowSunflower()
     {
+        OnSeedPlanted.Invoke();
+
         var flower = Instantiate(sunflowerPrefab, transform);
 
         _sunflower = flower.GetComponent<Sunflower>();
@@ -195,11 +226,23 @@ public class GrassBlock : MonoBehaviour
 
     public void SpeedUpFlowerGrowth()
     {
-        if (_sunflower != null) _sunflower.Water();
+        if (_sunflower != null)
+        {
+            if (_sunflower.IsWatered) return;
+
+            _sunflower.Water();
+            audioSource.PlayOneShot(waterPlantSFX, GameSettings.volumeSFX);
+            OnWateredFlower.Invoke();
+        }
     }
 
     public void HarvestSunflower()
     {
-        // have the sunflower be uprooted and despawn
+        if (GameState.GameMode == GameMode.Standard) return;
+
+        _sunflower.Harvest();
+        audioSource.PlayOneShot(plantSFX, GameSettings.volumeSFX);
+        _sunflower = null;
+        SetDirtState(DirtState.None);
     }
 }

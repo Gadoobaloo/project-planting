@@ -41,6 +41,7 @@ public class WaterCan : Item
 
     protected override void BounceCustom()
     {
+        Launch(0, 4000);
     }
 
     protected override void DestroyCustom()

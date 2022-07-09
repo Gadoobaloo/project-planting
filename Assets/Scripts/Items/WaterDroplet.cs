@@ -1,10 +1,7 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WaterDroplet : Item
 {
-    private List<Collider2D> _collider2Ds = new List<Collider2D>();
-
     protected override void ActivateCustom()
     {
     }
@@ -31,38 +28,44 @@ public class WaterDroplet : Item
 
     protected override void DestroyCustom()
     {
-        
     }
 
-    public void SpraySpawn(Vector3 pos ,int i)
+    public void SpraySpawn(Vector3 pos, int i)
     {
         transform.position = pos;
 
         const float height = 100f;
-        
+
         switch (i)
         {
             case 1:
                 Launch(-150, height);
                 break;
+
             case 2:
                 Launch(-100, height);
                 break;
+
             case 3:
                 Launch(-50, height);
                 break;
+
             case 4:
                 Launch(0, height);
                 break;
+
             case 5:
                 Launch(50, height);
                 break;
+
             case 6:
                 Launch(100, height);
                 break;
+
             case 7:
                 Launch(150, height);
                 break;
+
             default:
                 Debug.LogError("SpraySpawn parameter " + i + " not accounted for");
                 break;
@@ -71,9 +74,6 @@ public class WaterDroplet : Item
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.GetComponent<GrassBlock>() != null)
-        {
-            col.GetComponent<GrassBlock>().SpeedUpFlowerGrowth();
-        }
+        if (col.GetComponent<GrassBlock>() != null) col.GetComponent<GrassBlock>().SpeedUpFlowerGrowth();
     }
 }

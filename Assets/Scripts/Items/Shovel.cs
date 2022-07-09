@@ -32,6 +32,7 @@ public class Shovel : Item
 
     protected override void BounceCustom()
     {
+        Launch(0, 4000);
     }
 
     protected override void DestroyCustom()
@@ -56,8 +57,8 @@ public class Shovel : Item
         if (collider2Ds[0].GetComponent<GrassBlock>() != null)
         {
             var dirtState = collider2Ds[0].GetComponent<GrassBlock>().CurrenDirtState;
-            
-            if ( dirtState == DirtState.Fertile || dirtState == DirtState.Planted)
+
+            if (dirtState == DirtState.Fertile || dirtState == DirtState.Planted)
             {
                 spriteRenderer.color = new Color(1f, 1f, 1f, 0.5f);
                 Destroy(gameObject, 0.5f);

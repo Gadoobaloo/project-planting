@@ -9,9 +9,11 @@ public class SunflowerPart : MonoBehaviour
     private bool _isGrowing;
     private bool _isWatered;
     private bool _isInfested;
-    private float _timer;
+
     private int _maxSpriteIndex;
     private int _currentSpriteIndex;
+
+    private float _timer;
 
     private float _growCooldown;
     private float _standardCooldown = 1f;

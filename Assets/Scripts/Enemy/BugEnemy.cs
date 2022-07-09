@@ -1,45 +1,66 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
-enum MovementType { Walk, Fly, Stop }
+internal enum MovementType
+{ Walk, Fly, Stop }
 
 public class BugEnemy : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private CapsuleCollider2D cc2D;
     [SerializeField] private Animator animator;
+    [SerializeField] private ScoreSO scoreSO;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSourceVoice;
+
+    [SerializeField] private AudioSource audioSourceWings;
+    [SerializeField] private AudioClip wingsSFX;
+    [SerializeField] private AudioClip chewSFX;
+    [SerializeField] private AudioClip deathSFX;
+    [SerializeField] private AudioClip catchSFX;
+
+    private bool wingSoundIsPlaying;
+
+    private ScoreCounter _scoreCounter;
 
     private readonly List<Collider2D> _collider2Ds = new List<Collider2D>();
 
-    [SerializeField] private float aggression;
-
-    private bool _isMidAir;
     private bool _isFlying;
     private bool _isEating;
+    private bool _isDead;
 
     private float _eatCooldown = 5f;
+    private float _eatSoundCooldown = 1f;
 
     private MovementType _movementType;
     private float _maxWalkSpeed = 1f;
-    
+
     private float _maxFlySpeedx = 2f;
     private float _maxFlySpeedy = 1.5f;
     private float _minFlydpeedy = -0.5f;
     private float _flySpeedy;
     private bool _isFacingRight;
-    
+
     private static readonly int IsEating = Animator.StringToHash("isEating");
     private static readonly int Die1 = Animator.StringToHash("Die");
     private static readonly int Land = Animator.StringToHash("Land");
     private static readonly int Fly1 = Animator.StringToHash("Fly");
 
+    [SerializeField] private UnityEvent OnDefeated;
+
     private void Start()
     {
-        Physics2D.IgnoreLayerCollision(9,9, true);
+        _scoreCounter = FindObjectOfType<ScoreCounter>();
+        if (_scoreCounter != null) OnDefeated.AddListener(delegate { _scoreCounter.AddScore(scoreSO); });
+
+        Physics2D.IgnoreLayerCollision(9, 9, true);
+
         _flySpeedy = Random.Range(_minFlydpeedy, _maxFlySpeedy);
-        
+
         if (transform.position.x < 0)
         {
             FaceRight();
@@ -49,21 +70,29 @@ public class BugEnemy : MonoBehaviour
             FaceLeft();
         }
     }
-    
+
     private void Update()
     {
-        if(transform.position.y < -8) Destroy(gameObject);
+        if (transform.position.y < -8) Destroy(gameObject);
+        if (Mathf.Abs(transform.position.x) >= 15) Destroy(gameObject);
 
         if (cc2D.IsTouching(GameState.ItemFilter))
         {
             CheckInteraction();
         }
-        
-        if(cc2D.IsTouching(GameState.GrassBlockFilter) && _isFlying) Walk();
+
+        if (cc2D.IsTouching(GameState.GrassBlockFilter) && _isFlying) Walk();
 
         if (_isEating)
         {
             _eatCooldown -= Time.deltaTime;
+            _eatSoundCooldown -= Time.deltaTime;
+
+            if (_eatSoundCooldown <= 0)
+            {
+                audioSourceVoice.PlayOneShot(chewSFX, GameSettings.volumeSFX);
+                _eatSoundCooldown = 1f;
+            }
 
             if (_eatCooldown <= 0)
             {
@@ -80,11 +109,14 @@ public class BugEnemy : MonoBehaviour
             case MovementType.Walk:
                 Walk();
                 break;
+
             case MovementType.Fly:
                 Fly();
                 break;
+
             case MovementType.Stop:
                 break;
+
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -108,7 +140,7 @@ public class BugEnemy : MonoBehaviour
             }
         }
     }
-    
+
     private void CatchSeed(Collider2D seed)
     {
         if (transform.childCount > 0)
@@ -116,7 +148,7 @@ public class BugEnemy : MonoBehaviour
             Die();
             return;
         }
-        
+
         var seedTransform = seed.GetComponent<Transform>();
         var seedRb = seed.GetComponent<Rigidbody2D>();
         var seedC2d = seed.GetComponent<Collider2D>();
@@ -127,16 +159,18 @@ public class BugEnemy : MonoBehaviour
 
         seedTransform.parent = transform;
         var position = transform.position;
-        
+
         seedTransform.position = new Vector3(position.x, position.y - 0.5f, position.z);
-        seedTransform.Rotate(0,0,90);
-        
+        seedTransform.Rotate(0, 0, 90);
+
         seedRb.velocity = Vector2.zero;
         seedRb.angularVelocity = 0f;
         seedRb.bodyType = RigidbodyType2D.Kinematic;
 
         animator.SetBool(IsEating, true);
         _isEating = true;
+
+        audioSourceVoice.PlayOneShot(catchSFX, GameSettings.volumeSFX);
 
         if (_movementType == MovementType.Walk) _movementType = MovementType.Stop;
     }
@@ -145,12 +179,12 @@ public class BugEnemy : MonoBehaviour
     {
         _movementType = MovementType.Walk;
     }
-    
+
     public void InitializeFly()
     {
         _movementType = MovementType.Fly;
     }
-    
+
     private void Walk()
     {
         if (_isFlying)
@@ -158,9 +192,10 @@ public class BugEnemy : MonoBehaviour
             _isFlying = false;
             animator.SetTrigger(Land);
             _movementType = MovementType.Walk;
-            if(_isEating) _movementType = MovementType.Stop;
+            if (_isEating) _movementType = MovementType.Stop;
+            WingSoundConrtol(false);
         }
-        
+
         animator.speed = Mathf.Abs(rb.velocity.x);
 
         int directionMultiplier = _isFacingRight ? 1 : -1;
@@ -168,7 +203,25 @@ public class BugEnemy : MonoBehaviour
         rb.AddForce(new Vector2(5 * directionMultiplier, 0f));
         if (Mathf.Abs(rb.velocity.x) > _maxWalkSpeed) rb.velocity = new Vector2(_maxWalkSpeed * directionMultiplier, rb.velocity.y);
     }
-    
+
+    private void WingSoundConrtol(bool shouldPlay)
+    {
+        if (wingSoundIsPlaying == shouldPlay) return;
+
+        wingSoundIsPlaying = shouldPlay;
+
+        if (wingSoundIsPlaying)
+        {
+            audioSourceWings.clip = wingsSFX;
+            audioSourceWings.loop = true;
+            audioSourceWings.Play();
+        }
+        else
+        {
+            audioSourceWings.Stop();
+        }
+    }
+
     private void Fly()
     {
         if (!_isFlying)
@@ -178,11 +231,13 @@ public class BugEnemy : MonoBehaviour
             _movementType = MovementType.Fly;
         }
 
+        WingSoundConrtol(true);
+
         int directionMultiplier = _isFacingRight ? 1 : -1;
         float eatMultiplier = _isEating ? 0.5f : 1f;
         float eatWeight = _isEating ? 0.5f : 0f;
-        
-        rb.velocity = new Vector2(_maxFlySpeedx * directionMultiplier * eatMultiplier, _flySpeedy -eatWeight);
+
+        rb.velocity = new Vector2(_maxFlySpeedx * directionMultiplier * eatMultiplier, _flySpeedy - eatWeight);
     }
 
     private void FaceLeft()
@@ -196,19 +251,29 @@ public class BugEnemy : MonoBehaviour
         _isFacingRight = true;
         transform.rotation = new Quaternion(0f, 180f, 0f, 0f);
     }
-    
+
     private void Die()
     {
+        _isDead = true;
+        _isEating = false;
+
+        OnDefeated.Invoke();
+
         _movementType = MovementType.Stop;
         rb.bodyType = RigidbodyType2D.Dynamic;
         cc2D.isTrigger = true;
         animator.SetTrigger(Die1);
         DropSeed();
 
+        WingSoundConrtol(false);
+
+        audioSourceVoice.PlayOneShot(deathSFX, GameSettings.volumeSFX);
+        audioSourceWings.Stop();
+
         rb.freezeRotation = false;
         float randTorque = Random.Range(5f, 8f);
-        int directionMultiplier = Random.Range(0, 2) == 0 ? 1: -1;
-        
+        int directionMultiplier = Random.Range(0, 2) == 0 ? 1 : -1;
+
         rb.AddTorque(randTorque * directionMultiplier);
         rb.AddForce(new Vector2(0, 200));
     }
@@ -226,7 +291,7 @@ public class BugEnemy : MonoBehaviour
     {
         var childRb = item.GetComponent<Rigidbody2D>();
         var childC2d = item.GetComponent<Collider2D>();
-        
+
         childC2d.enabled = true;
         childRb.bodyType = RigidbodyType2D.Dynamic;
 
@@ -240,7 +305,7 @@ public class BugEnemy : MonoBehaviour
     private void EatSeed()
     {
         if (transform.childCount == 0) return;
-        transform.GetChild(0).GetComponent<Item>().DestroyUniversal();
+        transform.GetChild(0).GetComponent<Seed>().GetEaten();
         animator.SetBool(IsEating, false);
         _isEating = false;
         if (_movementType == MovementType.Stop) _movementType = MovementType.Walk;

@@ -15,7 +15,7 @@ public class GloveCore : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.GetComponent<GrassBlock>() != null)
+        if (col.CompareTag("gloveZone"))
         {
             _numOfBlocks++;
 
@@ -26,22 +26,22 @@ public class GloveCore : MonoBehaviour
                 _grassBlock.HideShovel();
             }
 
-            _grassBlock = col.GetComponent<GrassBlock>();
+            _grassBlock = col.transform.parent.GetComponent<GrassBlock>();
             _grassBlock.ShowShovel();
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.GetComponent<GrassBlock>() != null)
+        if (other.CompareTag("gloveZone"))
         {
             _numOfBlocks--;
 
             if (_numOfBlocks <= 0)
             {
-                if (other.GetComponent<GrassBlock>() != null)
+                if (other.transform.parent.GetComponent<GrassBlock>() != null)
                 {
-                    other.GetComponent<GrassBlock>().HideShovel();
+                    other.transform.parent.GetComponent<GrassBlock>().HideShovel();
                 }
                 glove.ShowGlove();
             }
